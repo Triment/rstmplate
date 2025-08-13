@@ -12,6 +12,9 @@ pub enum CommonError {
 
     #[error("an internal server error occurred")]
     Anyhow(#[from] anyhow::Error),
+
+    #[error("jsonwebtoken error: {0}")]
+    JwtError(#[from] jsonwebtoken::errors::Error),
 }
 
 impl CommonError {
@@ -20,6 +23,7 @@ impl CommonError {
             CommonError::Database(e) => format!("Database error: {}", e),
             CommonError::InvalidEntity(_) => "Invalid entity provided".to_string(),
             CommonError::Anyhow(e) => format!("An error occurred: {}", e),
+            CommonError::JwtError(e) => format!("JWT error: {}", e),
         }
     }
 }
@@ -37,6 +41,7 @@ impl IntoResponse for CommonError {
             CommonError::Database(_) => axum::http::StatusCode::INTERNAL_SERVER_ERROR,
             CommonError::InvalidEntity(_) => axum::http::StatusCode::BAD_REQUEST,
             CommonError::Anyhow(_) => axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+            CommonError::JwtError(_) => axum::http::StatusCode::UNAUTHORIZED,
         };
 
         let error_response = ErrorResponse {

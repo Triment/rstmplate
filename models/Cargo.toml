@@ -9,3 +9,5 @@ serde_json = { workspace = true }
 time = { workspace = true }
 serde_with = { workspace = true, features = ["time_0_3"] }
 uuid = { workspace = true, features = ["serde"] }
+common = { path = "../common" }
+sqlx = { workspace = true, features = ["runtime-tokio", "postgres", "time", "uuid"] }

@@ -2,12 +2,14 @@
 
 use std::sync::LazyLock;
 
-use axum::Extension;
+use axum::{extract::State, Extension};
 use common::state::AppState;
+use models::user;
 use regex::Regex;
 use serde::Deserialize;
 use validator::Validate;
 use uuid::Uuid;
+mod middleware;
 
 async fn add_handler() -> String {
     // Example handler implementation
@@ -21,32 +23,39 @@ static USERNAME_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[0-9A-Za
 #[derive(Deserialize, Validate)]
 #[serde(rename_all = "camelCase")]
 pub struct UserAuth {
-    #[validate(length(min = 3, max = 16),)]
+    #[validate(length(min = 3, max = 16), regex(path = "USERNAME_REGEX"))]
     username: String,
     #[validate(length(min = 8, max = 32))]
     password: String,
 }
 
 async fn create_user(
-    Extension(state): Extension<AppState>,
+    State(state): State<AppState>,
     axum::Json(user): axum::Json<UserAuth>,
 ) -> Result<axum::Json<models::user::User>, common::error::CommonError> {
     user.validate()?;
     // Example user creation logic
-    let UserAuth { username, password } = user;
-    let password_hash = common::password::hash(password).await?;
-    let user = models::user::User::new(
-        Uuid::new_v4(),
-        username,
-        password_hash,
-    );
+   let user = models::user::User::create(
+        &state.db_pool,
+        user.username.clone(),
+        common::password::hash(user.password).await?,
+    ).await?;
+    Ok(axum::Json(user))
+}
+
+async fn get_user(
+    State(state): State<AppState>
+) -> Result<axum::Json<Vec<models::user::User>>, common::error::CommonError> {
+    // Example user retrieval logic
+    let user = models::user::User::get_all(&state.db_pool).await?;
     Ok(axum::Json(user))
 }
 
 pub fn create_router() -> axum::Router<AppState> {
     let router = axum::Router::new()
         .route("/add", axum::routing::get(add_handler))
-        .route("/v1/user", axum::routing::post(create_user));
+        .route("/v1/user", axum::routing::post(create_user))
+        .route("/v1/user", axum::routing::get(get_user));
     router
 }
 

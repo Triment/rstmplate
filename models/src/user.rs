@@ -12,25 +12,23 @@ pub struct User {
     #[serde_as(as = "Rfc3339")]
     pub updated_at: OffsetDateTime,
 }
-impl User {
-    pub fn new(id: uuid::Uuid, username: String, password_hash: String) -> Self {
-        let now = OffsetDateTime::now_utc();
-        Self {
-            id: None,
-            username,
-            password_hash,
-            created_at: now,
-            updated_at: now,
-        }
-    }
 
-    pub fn update(&mut self, new_username: Option<String>, new_password_hash: Option<String>) {
-        if let Some(username) = new_username {
-            self.username = username;
-        }
-        if let Some(password_hash) = new_password_hash {
-            self.password_hash = password_hash;
-        }
-        self.updated_at = OffsetDateTime::now_utc();
+impl User {
+    pub async fn create(
+        pool: &sqlx::PgPool,
+        username: String,
+        password_hash: String
+    ) -> Result<Self, common::error::CommonError> {
+        let user = sqlx::query_as!(
+            Self,
+            r#"INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING id, username, password_hash, created_at, updated_at"#,
+            username,
+            password_hash
+        ).fetch_one(pool).await?;
+        Ok(user)
+    }
+    pub async fn get_all(pool: &sqlx::PgPool) -> Result<Vec<Self>, common::error::CommonError> {
+        let users = sqlx::query_as!(Self, "SELECT * FROM users").fetch_all(pool).await?;
+        Ok(users)
     }
 }
