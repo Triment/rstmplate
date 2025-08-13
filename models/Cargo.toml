@@ -4,3 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+time = { workspace = true }
+serde_with = { workspace = true, features = ["time_0_3"] }
+uuid = { workspace = true, features = ["serde"] }

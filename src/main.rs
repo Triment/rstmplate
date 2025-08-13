@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use axum::Extension;
 use sqlx::postgres::PgPoolOptions;
 
@@ -9,7 +11,7 @@ async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
         .connect(dotenvy::var("DATABASE_URL")?.as_str())
         .await?;
     sqlx::migrate!().run(&pool).await?;
-    let app = api::create_router().await.layer(Extension(pool));
+    let app = api::create_router().with_state(common::state::AppState { db_pool: pool.clone() });
 
     let addr = "127.0.0.1:3000";
     println!("listening on http://{}", addr);

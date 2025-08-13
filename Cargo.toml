@@ -16,6 +16,7 @@ sqlx = { workspace = true, features = ["runtime-tokio-rustls", "any", "postgres"
 dotenvy = { workspace = true }
 axum = { workspace = true }
 
+
 [workspace.dependencies]
 axum = "0.8.4"
 axum-extra = "0.10.1"
@@ -30,3 +31,10 @@ tracing-subscriber = "0.3.19"
 validator = { version = "0.20.0", features = ["derive"] }
 dotenvy = "0.15.7"
 thiserror = "=1.0.24"
+time = "0.3.41"
+serde_with = "3.14.0"
+uuid = "1.18.0"
+regex = "1.11.1"
+argon2 = { version = "0.5.3", features = ["rand"] }
+anyhow = "1.0.99"
+rand = "0.9.2"

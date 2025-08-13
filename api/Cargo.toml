@@ -4,7 +4,16 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+common = { path = "../common" }
+models = { path = "../models" }
 axum = { workspace = true }
 tokio = { workspace = true, features = ["full"]  }
 tower = { workspace = true }
 http-body-util = { workspace = true }
+validator = { workspace = true, features = ["derive"] }
+regex.workspace = true
+serde.workspace = true
+uuid = { workspace = true, features = ["v4", "serde"] }
+[dev-dependencies]
+sqlx = { workspace = true, features = ["runtime-tokio", "postgres"] }
+dotenvy = { workspace = true }

@@ -1,16 +1,25 @@
 use axum::response::IntoResponse;
 use serde::{Deserialize, Serialize};
+use validator::ValidationErrors;
 
 #[derive(thiserror::Error, Debug)]
 pub enum CommonError {
     #[error("Database error: {0}")]
     Database(#[from] sqlx::Error),
+
+    #[error("validation error in request body")]
+    InvalidEntity(#[from] ValidationErrors),
+
+    #[error("an internal server error occurred")]
+    Anyhow(#[from] anyhow::Error),
 }
 
 impl CommonError {
     pub fn message(&self) -> String {
         match self {
             CommonError::Database(e) => format!("Database error: {}", e),
+            CommonError::InvalidEntity(_) => "Invalid entity provided".to_string(),
+            CommonError::Anyhow(e) => format!("An error occurred: {}", e),
         }
     }
 }
@@ -26,6 +35,8 @@ impl IntoResponse for CommonError {
     fn into_response(self) -> axum::response::Response {
         let status = match self {
             CommonError::Database(_) => axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+            CommonError::InvalidEntity(_) => axum::http::StatusCode::BAD_REQUEST,
+            CommonError::Anyhow(_) => axum::http::StatusCode::INTERNAL_SERVER_ERROR,
         };
 
         let error_response = ErrorResponse {

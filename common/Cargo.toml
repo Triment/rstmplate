@@ -9,3 +9,8 @@ serde_json = { workspace = true }
 thiserror = { workspace = true }
 axum = { workspace = true }
 sqlx = { workspace = true, features = ["runtime-tokio-rustls", "any", "postgres"] }
+validator = { workspace = true, features = ["derive"] }
+argon2 = { workspace = true }
+anyhow = { workspace = true }
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
+rand = { workspace = true }
