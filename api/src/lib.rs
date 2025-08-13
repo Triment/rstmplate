@@ -1,47 +1,15 @@
-
-
-use std::sync::LazyLock;
-
-use axum::{extract::State, Extension};
+use axum::{extract::State};
 use common::state::AppState;
-use models::user;
-use regex::Regex;
-use serde::Deserialize;
-use validator::Validate;
-use uuid::Uuid;
+
+use crate::token::sign_in;
 mod middleware;
+mod token;
 
 async fn add_handler() -> String {
     // Example handler implementation
     "test".to_string()
 }
 
-static USERNAME_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[0-9A-Za-z_]+$").unwrap());
-
-// CREATE USER
-
-#[derive(Deserialize, Validate)]
-#[serde(rename_all = "camelCase")]
-pub struct UserAuth {
-    #[validate(length(min = 3, max = 16), regex(path = "USERNAME_REGEX"))]
-    username: String,
-    #[validate(length(min = 8, max = 32))]
-    password: String,
-}
-
-async fn create_user(
-    State(state): State<AppState>,
-    axum::Json(user): axum::Json<UserAuth>,
-) -> Result<axum::Json<models::user::User>, common::error::CommonError> {
-    user.validate()?;
-    // Example user creation logic
-   let user = models::user::User::create(
-        &state.db_pool,
-        user.username.clone(),
-        common::password::hash(user.password).await?,
-    ).await?;
-    Ok(axum::Json(user))
-}
 
 async fn get_user(
     State(state): State<AppState>
@@ -54,7 +22,7 @@ async fn get_user(
 pub fn create_router() -> axum::Router<AppState> {
     let router = axum::Router::new()
         .route("/add", axum::routing::get(add_handler))
-        .route("/v1/user", axum::routing::post(create_user))
+        .route("/v1/user", axum::routing::post(sign_in))
         .route("/v1/user", axum::routing::get(get_user));
     router
 }

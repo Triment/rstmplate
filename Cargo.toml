@@ -19,6 +19,7 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 jsonwebtoken = { workspace = true }
 
+
 [workspace.dependencies]
 axum = "0.8.4"
 axum-extra = "0.10.1"
@@ -41,3 +42,4 @@ argon2 = { version = "0.5.3", features = ["rand"] }
 anyhow = "1.0.99"
 rand = "0.9.2"
 jsonwebtoken = "9.3.1"
+rust-i18n = "3.1.5"
