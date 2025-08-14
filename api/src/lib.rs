@@ -5,12 +5,6 @@ use crate::token::sign_in;
 mod middleware;
 mod token;
 
-async fn add_handler() -> String {
-    // Example handler implementation
-    "test".to_string()
-}
-
-
 async fn get_user(
     State(state): State<AppState>
 ) -> Result<axum::Json<Vec<models::user::User>>, common::error::CommonError> {
@@ -21,7 +15,6 @@ async fn get_user(
 
 pub fn create_router() -> axum::Router<AppState> {
     let router = axum::Router::new()
-        .route("/add", axum::routing::get(add_handler))
         .route("/v1/user", axum::routing::post(sign_in))
         .route("/v1/user", axum::routing::get(get_user));
     router

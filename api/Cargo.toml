@@ -6,6 +6,7 @@ edition = "2024"
 [dependencies]
 common = { path = "../common" }
 models = { path = "../models" }
+i18n = { path = "../i18n" }
 axum = { workspace = true }
 tokio = { workspace = true, features = ["full"]  }
 tower = { workspace = true }
@@ -16,6 +17,7 @@ serde.workspace = true
 uuid = { workspace = true, features = ["v4", "serde"] }
 jsonwebtoken = { workspace = true }
 time = { workspace = true }
+
 
 [dev-dependencies]
 sqlx = { workspace = true, features = ["runtime-tokio", "postgres"] }

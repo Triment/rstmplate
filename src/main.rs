@@ -2,9 +2,11 @@
 use std::sync::Arc;
 use serde::{Deserialize, Serialize};
 use sqlx::postgres::PgPoolOptions;
-
+i18n::init!();
 #[tokio::main]
 async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
+    i18n::set_locale("zh");
+    println!("{}", i18n::t!("common.error.Unauthorized", msg = "test"));
     let pool = PgPoolOptions::new()
         .max_connections(5)
         .connect(dotenvy::var("DATABASE_URL")?.as_str())

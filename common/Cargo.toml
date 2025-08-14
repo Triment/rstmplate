@@ -16,3 +16,4 @@ tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
 rand = { workspace = true }
 jsonwebtoken = { workspace = true }
 dotenvy = { workspace = true }
+rust-i18n = { workspace = true }

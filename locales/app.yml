@@ -1,0 +1,12 @@
+_version: 2
+hello:
+  en: "Hello, %{name}!"
+  zh-CN: "你好，%{name}!"
+common:
+  error:
+    Unauthorized:
+      en: "Unauthorized %{msg}"
+      zh: "未授权 %{msg}"
+    UserOrPasswordIncorrect:
+      en: "User or password incorrect"
+      zh: "用户或密码错误"
