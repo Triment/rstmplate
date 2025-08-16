@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["api", "common", "models"]
+members = ["api", "blind", "common", "models", "plugin"]
 
 [package]
 name = "rstmplate"
@@ -19,6 +19,7 @@ minify-key-thresh = 4
 api = { path = "./api" }
 models = { path = "./models" }
 common = { path = "./common" }
+plugin = { path = "plugin" }
 tokio = { workspace = true, features = ["full"]  }
 sqlx = { workspace = true, features = ["runtime-tokio-rustls", "any", "postgres"] }
 dotenvy = { workspace = true }
@@ -26,6 +27,7 @@ axum = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 jsonwebtoken = { workspace = true }
+libloading = { workspace = true }
 
 [workspace.dependencies]
 axum = "0.8.4"
@@ -49,3 +51,5 @@ argon2 = { version = "0.5.3", features = ["rand"] }
 anyhow = "1.0.99"
 rand = "0.9.2"
 jsonwebtoken = "9.3.1"
+libloading = "0.8.8"
+futures = "0.3.31"

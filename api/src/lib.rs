@@ -2,7 +2,7 @@ use axum::{extract::State};
 use common::state::AppState;
 
 use crate::token::sign_in;
-mod middleware;
+pub mod middleware;
 mod token;
 
 async fn get_user(

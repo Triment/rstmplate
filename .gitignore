@@ -1,2 +1,5 @@
 /target
 /.sqlx
+**/*.dylib
+**/*.so
+**/*.dll

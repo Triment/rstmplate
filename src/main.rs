@@ -1,12 +1,24 @@
+use std::sync::Arc;
+
 use sqlx::postgres::PgPoolOptions;
+mod plugin_loader;
 #[tokio::main]
 async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let pool = PgPoolOptions::new()
         .max_connections(5)
         .connect(dotenvy::var("DATABASE_URL")?.as_str())
         .await?;
-    let app = api::create_router().with_state(common::state::AppState { db_pool: pool.clone() });
-
+    let mut app = api::create_router().with_state(common::state::AppState { db_pool: pool.clone() });
+    for plugin in plugin_loader::load_plugins()? {
+        // 这里可以将插件注册到你的应用中，例如添加路由或中间件
+        if let Some(middle) = plugin.middleware() {
+            //continue; // 如果插件没有中间件，则跳过
+             app = app.nest(&plugin.config().endpoint, plugin.routes(common::state::AppState { db_pool: pool.clone() }).layer(axum::middleware::from_fn(middle)));
+        } else {
+            app = app.nest(&plugin.config().endpoint, plugin.routes(common::state::AppState { db_pool: pool.clone() }));
+        }
+       
+    }
     let addr = "127.0.0.1:3000";
     println!("listening on http://{}", addr);
 
