@@ -22,6 +22,8 @@ pub fn create_router() -> axum::Router<AppState> {
 
 #[cfg(test)]
 mod tests {
+    use tokio::sync::mpsc;
+
     use axum::http::Request;
     use http_body_util::BodyExt;
     use tower::ServiceExt;
@@ -31,12 +33,13 @@ mod tests {
 
     #[tokio::test]
     async fn it_works() {
+        let (shutdown_send, mut _shutdown_recv) = mpsc::unbounded_channel::<()>();
         let pool = PgPoolOptions::new()
             .max_connections(5)
             .connect(dotenvy::var("DATABASE_URL").unwrap().as_str())
             .await
             .unwrap();
-        let app_state = AppState { db_pool: pool.clone() };
+        let app_state = AppState {db_pool:pool.clone(), shutdown_send };
         let router = create_router().with_state(app_state);
         // Here you would typically test the router's functionality
         // For example, you could use axum's test utilities to send requests
