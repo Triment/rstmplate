@@ -4,7 +4,6 @@ use validator::Validate;
 use regex::Regex;
 use serde::Deserialize;
 use std::sync::LazyLock;
-use i18n::t;
 static USERNAME_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[0-9A-Za-z_]+$").unwrap());
 
 // CREATE USER
@@ -43,7 +42,7 @@ pub async fn sign_in(
     ).await?;
 
     if user.is_none() || !common::password::verify(user.clone().unwrap().password_hash, user.clone().unwrap().password_hash).await? {
-        return Err(common::error::CommonError::Unauthorized(t!("common.error.UsernameOrPasswordIncorrect").into()));
+        return Err(common::error::CommonError::Unauthorized("Invalid username or password".to_string()));
     }
     #[derive(serde::Serialize)]
     struct Cliams {

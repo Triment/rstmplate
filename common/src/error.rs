@@ -1,8 +1,8 @@
+use std::fmt::format;
+
 use axum::response::IntoResponse;
 use serde::{Deserialize, Serialize};
 use validator::ValidationErrors;
-
-use rust_i18n::{i18n, set_locale, t};
 
 #[derive(thiserror::Error, Debug)]
 pub enum CommonError {
@@ -24,13 +24,12 @@ pub enum CommonError {
 
 impl CommonError {
     pub fn message(&self) -> String {
-        set_locale("zh-CN");
         match self {
             CommonError::Database(e) => format!("Database error: {}", e),
             CommonError::InvalidEntity(_) => "Invalid entity provided".to_string(),
             CommonError::Anyhow(e) => format!("An error occurred: {}", e),
             CommonError::JwtError(e) => format!("JWT error: {}", e),
-            CommonError::Unauthorized(msg) => String::from(t!("common.error.Unauthorized", msg = msg)),
+            CommonError::Unauthorized(msg) => format!("Unauthorized: {}", msg),
         }
     }
 }
