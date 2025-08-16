@@ -16,6 +16,7 @@ pub struct UserAuth {
     password: String,
 }
 
+#[allow(dead_code)]
 pub async fn sign_up(
     State(state): State<AppState>,
     axum::Json(user): axum::Json<UserAuth>,

@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use time::{OffsetDateTime, format_description::well_known::Rfc3339};
 #[serde_with::serde_as]
 #[derive(Serialize, Clone)]

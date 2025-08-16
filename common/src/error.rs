@@ -1,4 +1,3 @@
-use std::fmt::format;
 
 use axum::response::IntoResponse;
 use serde::{Deserialize, Serialize};

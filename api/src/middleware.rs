@@ -25,6 +25,7 @@ struct Claims {
 /// jti (JWT ID):
 /// JWT 唯一标识符，用于区分不同的JWT，可以用来防止重放攻击。
 /// Middleware to authenticate requests using JWT.
+#[allow(dead_code)]
 async fn auth_middleware(mut req: Request, next: Next) -> Result<Response, StatusCode> {
     let token_opt = req
         .headers()
