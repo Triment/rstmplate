@@ -1,4 +1,4 @@
-use axum::{Extension, extract::Request, http::StatusCode, middleware::Next, response::Response};
+use axum::{extract::Request, http::StatusCode, middleware::Next, response::Response};
 use common::jwt::verify_jwt;
 use jsonwebtoken::Validation;
 use serde::{Deserialize, Serialize};

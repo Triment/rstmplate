@@ -1,6 +1,3 @@
-#[warn(unused_imports)]
-use std::sync::Arc;
-use serde::{Deserialize, Serialize};
 use sqlx::postgres::PgPoolOptions;
 #[tokio::main]
 async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
