@@ -29,6 +29,9 @@ serde_json = { workspace = true }
 jsonwebtoken = { workspace = true }
 libloading = { workspace = true }
 tokio-util = { workspace = true }
+anyhow = { workspace = true }
+base64 = { workspace = true }
+ed25519-dalek = { version = "2.2.0", features = ["rand_core"] }
 
 [workspace.dependencies]
 axum = "0.8.4"
@@ -50,8 +53,8 @@ uuid = "1.18.0"
 regex = "1.11.1"
 argon2 = { version = "0.5.3", features = ["rand"] }
 anyhow = "1.0.99"
-rand = "0.9.2"
 jsonwebtoken = "9.3.1"
 libloading = "0.8.8"
 futures = "0.3.31"
 tokio-util = "0.7.16"
+base64 = "0.22.1"

@@ -3,3 +3,6 @@
 **/*.dylib
 **/*.so
 **/*.dll
+plugins/
+ed25519_pk.bin
+ed25519_sk.bin

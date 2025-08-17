@@ -22,3 +22,5 @@ Thumbs.db
 
 
 *.log
+ed25519_pk.bin
+ed25519_sk.bin
