@@ -4,9 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-plugin = { path = "../plugin" }
+plugin = { path = "../../plugin" }
 axum = { workspace = true }
-common = { path = "../common" }
+common = { path = "../../common" }
 futures = { workspace = true }
 jsonwebtoken = { workspace = true }
 serde.workspace = true

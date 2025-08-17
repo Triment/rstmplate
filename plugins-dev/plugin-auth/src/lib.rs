@@ -20,7 +20,7 @@ impl Plugin for HelloPlugin {
             description: "A simple hello world plugin".to_string(),
             version: "0.1.0".to_string(),
             author: "Your Name".to_string(),
-            endpoint: "/hello".to_string(), // 插件的端点
+            endpoint: "/auth".to_string(), // 插件的端点
         }
     }
 
@@ -50,7 +50,6 @@ impl Plugin for HelloPlugin {
                     req.extensions_mut().insert(data.claims);
                     return Ok(next.run(req).await);
                 }
-                return Ok(next.run(req).await);
                 Err(StatusCode::UNAUTHORIZED)
             })
         })
@@ -64,8 +63,7 @@ impl Plugin for HelloPlugin {
 }
 
 async fn home(State(state): State<common::state::AppState>) -> impl IntoResponse {
-    state.shutdown_send.send(());
-    "Hello, bbs!"
+    "Hello, auth!"
 }
 
 

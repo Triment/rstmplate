@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["api", "blind", "common", "models", "plugin"]
+members = ["api", "common", "models", "plugin", "plugins-dev/plugin-auth", "plugins-dev/blind"]
 
 [package]
 name = "rstmplate"

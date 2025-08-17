@@ -1330,6 +1330,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "plugin-auth"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "common",
+ "futures",
+ "jsonwebtoken",
+ "plugin",
+ "serde",
+]
+
+[[package]]
 name = "potential_utf"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"

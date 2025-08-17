@@ -1,0 +1,14 @@
+[package]
+name = "plugin-auth"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+plugin = { path = "../../plugin" }
+axum = { workspace = true }
+common = { path = "../../common" }
+futures = { workspace = true }
+jsonwebtoken = { workspace = true }
+serde.workspace = true
+[lib]
+crate-type = ["cdylib"]
