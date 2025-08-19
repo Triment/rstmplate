@@ -1,7 +1,7 @@
 use anyhow::{bail, Context, Result};
 use base64::{engine::general_purpose::STANDARD, Engine};
 use clap::{Parser, Subcommand};
-use ed25519_dalek::{Signature, SigningKey, VerifyingKey, Signer, SignatureError};
+use ed25519_dalek::{Signature, SigningKey, VerifyingKey, Signer};
 use rand::rngs::OsRng;
 use std::{fs, path::PathBuf};
 
@@ -54,7 +54,7 @@ fn sign(file: PathBuf, key: Option<PathBuf>) -> Result<()> {
     let data = fs::read(&file).with_context(|| format!("read {}", file.display()))?;
     let sig: Signature = sk.sign(&data);
 
-    let sig_path = file.with_extension(format!("{}sig", file.extension().map(|e| format!("{}. ", e.to_string_lossy())).unwrap_or_default()).replace(". ", "."));
+    //let sig_path = file.with_extension(format!("{}sig", file.extension().map(|e| format!("{}. ", e.to_string_lossy())).unwrap_or_default()).replace(". ", "."));
     // 更稳妥：直接 <file>.sig
     let sig_path = file.with_extension("").with_extension("sig");
     fs::write(&sig_path, sig.to_bytes())?;

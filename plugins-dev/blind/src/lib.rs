@@ -1,10 +1,26 @@
 use axum::{
-    body::Body, extract::{Request, State}, http::StatusCode, middleware::Next, response::{IntoResponse, Response}, Router
+    body::Body, extract::{Path, Request, State}, http::{header, StatusCode}, middleware::Next, response::{IntoResponse, Response}, Router
 };
-use common::jwt::verify_jwt;
-use jsonwebtoken::Validation;
 use plugin::Plugin;
 use serde::{Deserialize, Serialize};
+
+use rust_embed::RustEmbed;
+use mime_guess;
+
+#[derive(RustEmbed)]
+#[folder = "assets/"] 
+struct Assets;
+
+async fn asset_handler(Path(path): Path<String>) -> Response {
+    match Assets::get(path.as_str()) {
+      Some(content) => {
+        let mime = mime_guess::from_path(path).first_or_octet_stream();
+        ([(header::CONTENT_TYPE, mime.as_ref())], content.data).into_response()
+      }
+      None => (StatusCode::NOT_FOUND, "404 Not Found").into_response(),
+    }
+}
+
 struct HelloPlugin;
 #[derive(Debug, Serialize, Deserialize, Clone)]
 struct Claims {
@@ -19,7 +35,7 @@ impl Plugin for HelloPlugin {
             name: "HelloPlugin".to_string(),
             description: "A simple hello world plugin".to_string(),
             version: "0.1.0".to_string(),
-            author: "Your Name".to_string(),
+            author: "assets".to_string(),
             endpoint: "/hello".to_string(), // 插件的端点
         }
     }
@@ -34,10 +50,12 @@ impl Plugin for HelloPlugin {
     > {
         None
     }
-
     fn routes(&self, context: common::state::AppState) -> Router {
+        // let service = tower_http::services::ServeDir::new("plugins/assets");
+
         Router::new()
             .route("/", axum::routing::get(home))
+            .route("/assets/{*path}", axum::routing::get(asset_handler))
             .with_state(context)
     }
 }
@@ -47,8 +65,8 @@ async fn home(State(state): State<common::state::AppState>) -> impl IntoResponse
     "重启信号已发送，正在重启..."
 }
 
-
 // 导出插件工厂函数 (必须是 extern "C")
+
 #[unsafe(no_mangle)]
 pub extern "C" fn create_plugin() -> Box<dyn Plugin> {
     Box::new(HelloPlugin)

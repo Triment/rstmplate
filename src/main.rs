@@ -1,5 +1,5 @@
-use std::time;
 use sqlx::postgres::PgPoolOptions;
+use std::{time};
 use tokio::sync::mpsc;
 mod plugin_loader;
 #[tokio::main]
@@ -36,6 +36,13 @@ async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
                     }),
                 );
             }
+            // app = app
+            //     .nest_service(
+            //         "/assets",
+            //         tower_http::services::ServeDir::new(
+            //             path::PathBuf::from("plugins").join(&plugin.config().author),
+            //         ),
+            //     );
         }
         app = app.route(
             "/dura",
@@ -48,10 +55,9 @@ async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
         println!("listening on http://{}", addr);
 
         let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await?;
-        let server = axum::serve(listener, app)
-            .with_graceful_shutdown(async move {
-                shutdown_recv.recv().await;
-            });
+        let server = axum::serve(listener, app).with_graceful_shutdown(async move {
+            shutdown_recv.recv().await;
+        });
         let exit_signal = tokio::spawn(async {
             tokio::signal::ctrl_c().await.unwrap();
             println!("Got Ctrl+C, exiting...");
