@@ -11,6 +11,12 @@ cargo run -p plugin -- gen #生成签名证书，保存好，私钥给签名插�
 cargo run -p plugin -- sign target_plugin.{ dylib | dll | so } #签名，默认使用ed25519_sk.bin文件签名
 cargo run -p plugin -- verify target_plugin.{ dylib | dll | so } #校验签名
 ```
+测试和编译
+```bash
+cargo build -p blind --release && cp target/release/libblind.dylib plugins && cargo run -p plugin -- sign plugins/libblind.dylib&&cargo build #release
+cargo build -p blind && cp target/debug/libblind.dylib plugins && cargo run -p plugin -- sign plugins/libblind.dylib&&cargo run #debug
+```
+
 
 ### 前端方案：react cdn加载 + importmap + web components挂载
 ```html:主应用
