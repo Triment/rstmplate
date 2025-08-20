@@ -39,7 +39,7 @@ impl Plugin for HelloPlugin {
         // let service = tower_http::services::ServeDir::new("plugins/assets");
         Router::new()
             .route("/", axum::routing::get(home))
-            .route("/assets/{*path}", axum::routing::get(create_asset_handler!("assets/")))
+            .route("/assets/{*path}", axum::routing::get(plugin::create_asset_handler!("assets/")))
             .with_state(context)
     }
 }

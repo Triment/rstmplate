@@ -44,7 +44,7 @@ async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
                 }
             } else {
                 // 没有中间件，直接添加路由
-                app = app.nest(&plugin_config.endpoint, plugin_routes);
+                app = app.nest(&endpoint, plugin_routes);
             }
             // app = app
             //     .nest_service(

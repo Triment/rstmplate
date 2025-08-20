@@ -1,5 +1,3 @@
-use std::sync::{Arc, RwLock};
-
 use axum::{extract::State};
 use common::state::AppState;
 
@@ -24,6 +22,8 @@ pub fn create_router(state: AppState) -> axum::Router<AppState> {
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
+
     use tokio::sync::mpsc;
 
     use axum::http::Request;
@@ -41,7 +41,7 @@ mod tests {
             .connect(dotenvy::var("DATABASE_URL").unwrap().as_str())
             .await
             .unwrap();
-        let app_state = AppState {db_pool:pool.clone(), shutdown_send, plugins: Arc::new(vec![])  };
+        let app_state = AppState {db_pool:pool.clone(), shutdown_send, plugins: Arc::new(vec![].into()) };
         let router = create_router(app_state.clone()).with_state(app_state);
         // Here you would typically test the router's functionality
         // For example, you could use axum's test utilities to send requests
