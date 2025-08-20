@@ -32,7 +32,8 @@ tokio-util = { workspace = true }
 anyhow = { workspace = true }
 base64 = { workspace = true }
 ed25519-dalek = { version = "2.2.0", features = ["rand_core"] }
-
+rust-embed = { workspace = true }
+mime_guess = { workspace = true }
 [workspace.dependencies]
 axum = "0.8.4"
 axum-extra = "0.10.1"

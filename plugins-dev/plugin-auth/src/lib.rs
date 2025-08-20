@@ -14,13 +14,16 @@ struct Claims {
     exp: u64,
 }
 impl Plugin for HelloPlugin {
-    fn config(&self) -> plugin::PluginConfig {
-        plugin::PluginConfig {
+    fn config(&self) -> common::plugin_config::PluginConfig {
+        common::plugin_config::PluginConfig {
             name: "HelloPlugin".to_string(),
             description: "A simple hello world plugin".to_string(),
             version: "0.1.0".to_string(),
             author: "Your Name".to_string(),
             endpoint: "/auth".to_string(), // 插件的端点
+            dependencies: None,
+            middleware_scope: common::plugin_config::MiddlewareScope::Global, // 中间件应用于全局
+            assets: None,
         }
     }
 
@@ -58,11 +61,10 @@ impl Plugin for HelloPlugin {
     fn routes(&self, context: common::state::AppState) -> Router {
         Router::new()
             .route("/", axum::routing::get(home))
-            .with_state(context)
     }
 }
 
-async fn home(State(state): State<common::state::AppState>) -> impl IntoResponse {
+async fn home() -> impl IntoResponse {
     "Hello, auth!"
 }
 

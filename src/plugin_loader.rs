@@ -3,7 +3,7 @@ use base64::{Engine, engine::general_purpose::STANDARD};
 use ed25519_dalek::{Signature, VerifyingKey};
 use std::{path::{Path}};
 
-const EMBEDDED_PUBKEY_BASE64: &str = "VBmqo7KvrtbgFncLBj70Jgl+vEBWsiJB/GvCKcVuSfg=";
+const EMBEDDED_PUBKEY_BASE64: &str = "R9WI90gfax0Xb5frev4wJlrR+nL8qvayqClck2/6jL0=";
 
 pub fn load_plugins() -> Result<Vec<Box<dyn plugin::Plugin>>, Box<dyn std::error::Error>> {
     let mut plugins: Vec<Box<dyn plugin::Plugin>> = Vec::new();

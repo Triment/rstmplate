@@ -1,26 +1,8 @@
 use axum::{
     body::Body, extract::{Path, Request, State}, http::{header, StatusCode}, middleware::Next, response::{IntoResponse, Response}, Router
 };
-use plugin::Plugin;
+use plugin::{create_asset_handler, Plugin};
 use serde::{Deserialize, Serialize};
-
-use rust_embed::RustEmbed;
-use mime_guess;
-
-#[derive(RustEmbed)]
-#[folder = "assets/"] 
-struct Assets;
-
-async fn asset_handler(Path(path): Path<String>) -> Response {
-    match Assets::get(path.as_str()) {
-      Some(content) => {
-        let mime = mime_guess::from_path(path).first_or_octet_stream();
-        ([(header::CONTENT_TYPE, mime.as_ref())], content.data).into_response()
-      }
-      None => (StatusCode::NOT_FOUND, "404 Not Found").into_response(),
-    }
-}
-
 struct HelloPlugin;
 #[derive(Debug, Serialize, Deserialize, Clone)]
 struct Claims {
@@ -30,13 +12,16 @@ struct Claims {
     exp: u64,
 }
 impl Plugin for HelloPlugin {
-    fn config(&self) -> plugin::PluginConfig {
-        plugin::PluginConfig {
+    fn config(&self) -> common::plugin_config::PluginConfig {
+        common::plugin_config::PluginConfig {
             name: "HelloPlugin".to_string(),
             description: "A simple hello world plugin".to_string(),
             version: "0.1.0".to_string(),
             author: "assets".to_string(),
             endpoint: "/hello".to_string(), // 插件的端点
+            dependencies: None,
+            middleware_scope: common::plugin_config::MiddlewareScope::PluginOnly, // 中间件仅应用于插件路由
+            assets: Some(vec!["main.js".to_string()]),
         }
     }
 
@@ -52,15 +37,15 @@ impl Plugin for HelloPlugin {
     }
     fn routes(&self, context: common::state::AppState) -> Router {
         // let service = tower_http::services::ServeDir::new("plugins/assets");
-
         Router::new()
             .route("/", axum::routing::get(home))
-            .route("/assets/{*path}", axum::routing::get(asset_handler))
+            .route("/assets/{*path}", axum::routing::get(create_asset_handler!("assets/")))
             .with_state(context)
     }
 }
 
 async fn home(State(state): State<common::state::AppState>) -> impl IntoResponse {
+    println!("{:?}", state.plugins);
     let _ = state.shutdown_send.send(());
     "重启信号已发送，正在重启..."
 }

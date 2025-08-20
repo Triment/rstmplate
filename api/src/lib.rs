@@ -1,3 +1,5 @@
+use std::sync::{Arc, RwLock};
+
 use axum::{extract::State};
 use common::state::AppState;
 
@@ -13,7 +15,7 @@ async fn get_user(
     Ok(axum::Json(user))
 }
 
-pub fn create_router() -> axum::Router<AppState> {
+pub fn create_router(state: AppState) -> axum::Router<AppState> {
     let router = axum::Router::new()
         .route("/v1/user", axum::routing::post(sign_in))
         .route("/v1/user", axum::routing::get(get_user));
@@ -39,8 +41,8 @@ mod tests {
             .connect(dotenvy::var("DATABASE_URL").unwrap().as_str())
             .await
             .unwrap();
-        let app_state = AppState {db_pool:pool.clone(), shutdown_send };
-        let router = create_router().with_state(app_state);
+        let app_state = AppState {db_pool:pool.clone(), shutdown_send, plugins: Arc::new(vec![])  };
+        let router = create_router(app_state.clone()).with_state(app_state);
         // Here you would typically test the router's functionality
         // For example, you could use axum's test utilities to send requests
         // and assert the responses.

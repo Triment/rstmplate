@@ -1,5 +1,6 @@
+use axum::Router;
 use sqlx::postgres::PgPoolOptions;
-use std::{time};
+use std::{sync::{Arc}, time};
 use tokio::sync::mpsc;
 mod plugin_loader;
 #[tokio::main]
@@ -10,31 +11,40 @@ async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
             .max_connections(5)
             .connect(dotenvy::var("DATABASE_URL")?.as_str())
             .await?;
-        let mut app = api::create_router().with_state(common::state::AppState {
+        let mut state = common::state::AppState {
             db_pool: pool.clone(),
             shutdown_send: shutdown_send.clone(),
-        });
+            plugins: Arc::new(vec![].into()),
+        };
+        let mut app = Router::new().with_state(state.clone());
+        //let mut app = api::create_router(state.clone()).with_state(state);
         for plugin in plugin_loader::load_plugins()? {
             // 这里可以将插件注册到你的应用中，例如添加路由或中间件
+            let plugin_config = plugin.config();
+            let plugin_routes = plugin.routes(state.clone());
+            let endpoint = format!("/plugins{}", plugin_config.endpoint);
+            if let Ok(mut plugins_vec) = state.plugins.lock() {
+                plugins_vec.push(plugin_config.clone());
+            }
             if let Some(middle) = plugin.middleware() {
-                //continue; // 如果插件没有中间件，则跳过
-                app = app.nest(
-                    &plugin.config().endpoint,
-                    plugin
-                        .routes(common::state::AppState {
-                            db_pool: pool.clone(),
-                            shutdown_send: shutdown_send.clone(),
-                        })
-                        .layer(axum::middleware::from_fn(middle)),
-                );
+                match plugin_config.middleware_scope {
+                    common::plugin_config::MiddlewareScope::PluginOnly => {
+                        // 中间件仅应用于插件路由
+                        app = app.nest(
+                            &endpoint,
+                            plugin_routes.layer(axum::middleware::from_fn(middle)),
+                        );
+                    },
+                    common::plugin_config::MiddlewareScope::Global => {
+                        // 中间件应用于全局
+                        app = app
+                            .layer(axum::middleware::from_fn(middle))
+                            .nest(&endpoint, plugin_routes);
+                    }
+                }
             } else {
-                app = app.nest(
-                    &plugin.config().endpoint,
-                    plugin.routes(common::state::AppState {
-                        db_pool: pool.clone(),
-                        shutdown_send: shutdown_send.clone(),
-                    }),
-                );
+                // 没有中间件，直接添加路由
+                app = app.nest(&plugin_config.endpoint, plugin_routes);
             }
             // app = app
             //     .nest_service(
@@ -53,7 +63,6 @@ async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
         );
         let addr = "127.0.0.1:3000";
         println!("listening on http://{}", addr);
-
         let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await?;
         let server = axum::serve(listener, app).with_graceful_shutdown(async move {
             shutdown_recv.recv().await;
