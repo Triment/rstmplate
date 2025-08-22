@@ -16,6 +16,7 @@ minify-key-len = 12
 minify-key-thresh = 4
 
 [dependencies]
+tower-http = { workspace = true, features = ["trace"] }
 api = { path = "./api" }
 models = { path = "./models" }
 common = { path = "./common" }
@@ -34,6 +35,9 @@ base64 = { workspace = true }
 ed25519-dalek = { version = "2.2.0", features = ["rand_core"] }
 rust-embed = { workspace = true }
 mime_guess = { workspace = true }
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
 [workspace.dependencies]
 axum = "0.8.4"
 axum-extra = "0.10.1"
@@ -61,3 +65,4 @@ tokio-util = "0.7.16"
 base64 = "0.22.1"
 rust-embed = "8.7.2"
 mime_guess = "2.0.5"
+tower-http = "0.6.6"

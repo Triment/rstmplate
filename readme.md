@@ -123,3 +123,11 @@ class PluginAElement extends HTMLElement {
 customElements.define('plugin-a', PluginAElement)
 ```
 插件端没有html，主要就是组件和打包配置
+
+curl -X POST "http://127.0.0.1:3000/plugins/hello/hello" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"test"}'
+```bash
+grep -rn ".from_request_parts" --include="*.rs" .\n
+```
+VBmqo7KvrtbgFncLBj70Jgl+vEBWsiJB/GvCKcVuSfg=

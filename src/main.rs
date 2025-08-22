@@ -1,10 +1,11 @@
-use axum::Router;
+use axum::{extract::Path, Router};
 use sqlx::postgres::PgPoolOptions;
 use std::{sync::{Arc}, time};
 use tokio::sync::mpsc;
 mod plugin_loader;
 #[tokio::main]
 async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
+    tracing_subscriber::util::SubscriberInitExt::init(tracing_subscriber::layer::SubscriberExt::with(tracing_subscriber::registry(),tracing_subscriber::fmt::layer().with_target(false).with_level(true)));
     loop {
         let (shutdown_send, mut shutdown_recv) = mpsc::unbounded_channel::<()>();
         let pool = PgPoolOptions::new()
@@ -60,7 +61,17 @@ async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
                 tokio::time::sleep(time::Duration::from_secs(5)).await;
                 "test"
             }),
-        );
+        ).layer(tower_http::trace::TraceLayer::new_for_http().make_span_with(|req: &axum::http::Request<_>| {
+             let path = if let Some(path) = req.extensions().get::<axum::extract::OriginalUri>() {
+                 // This will include `/api`
+                 path.0.path().to_owned()
+             } else {
+                 // The `OriginalUri` extension will always be present if using
+                 // `Router` unless another extractor or middleware has removed it
+                 req.uri().path().to_owned()
+             };
+             tracing::info_span!("http-request", %path)
+         }));
         let addr = "127.0.0.1:3000";
         println!("listening on http://{}", addr);
         let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await?;
