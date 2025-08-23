@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["api", "common", "models", "plugin", "plugins-dev/plugin-auth", "plugins-dev/blind"]
+members = ["api", "common", "models"]
 
 [package]
 name = "rstmplate"
@@ -20,7 +20,6 @@ tower-http = { workspace = true, features = ["trace"] }
 api = { path = "./api" }
 models = { path = "./models" }
 common = { path = "./common" }
-plugin = { path = "plugin" }
 tokio = { workspace = true, features = ["full"]  }
 sqlx = { workspace = true, features = ["runtime-tokio-rustls", "any", "postgres"] }
 dotenvy = { workspace = true }
@@ -28,13 +27,9 @@ axum = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 jsonwebtoken = { workspace = true }
-libloading = { workspace = true }
 tokio-util = { workspace = true }
 anyhow = { workspace = true }
 base64 = { workspace = true }
-ed25519-dalek = { version = "2.2.0", features = ["rand_core"] }
-rust-embed = { workspace = true }
-mime_guess = { workspace = true }
 tracing.workspace = true
 tracing-subscriber.workspace = true
 

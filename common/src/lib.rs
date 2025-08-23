@@ -2,10 +2,9 @@ pub mod error;
 pub mod state;
 pub mod password;
 pub mod jwt;
-pub mod plugin_config;
+pub mod macros;
 #[cfg(test)]
 mod tests {
-    use super::*;
     #[test]
     fn it_works() {
 

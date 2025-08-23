@@ -13,7 +13,7 @@ async fn get_user(
     Ok(axum::Json(user))
 }
 
-pub fn create_router(state: AppState) -> axum::Router<AppState> {
+pub fn create_router(_state: AppState) -> axum::Router<AppState> {
     let router = axum::Router::new()
         .route("/v1/user", axum::routing::post(sign_in))
         .route("/v1/user", axum::routing::get(get_user));
@@ -22,10 +22,6 @@ pub fn create_router(state: AppState) -> axum::Router<AppState> {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Arc;
-
-    use tokio::sync::mpsc;
-
     use axum::http::Request;
     use http_body_util::BodyExt;
     use tower::ServiceExt;
@@ -35,13 +31,12 @@ mod tests {
 
     #[tokio::test]
     async fn it_works() {
-        let (shutdown_send, mut _shutdown_recv) = mpsc::unbounded_channel::<()>();
         let pool = PgPoolOptions::new()
             .max_connections(5)
             .connect(dotenvy::var("DATABASE_URL").unwrap().as_str())
             .await
             .unwrap();
-        let app_state = AppState {db_pool:pool.clone(), shutdown_send, plugins: Arc::new(vec![].into()) };
+        let app_state = AppState {db_pool:pool.clone() };
         let router = create_router(app_state.clone()).with_state(app_state);
         // Here you would typically test the router's functionality
         // For example, you could use axum's test utilities to send requests
