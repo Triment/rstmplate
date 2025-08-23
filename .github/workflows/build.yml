@@ -1,0 +1,46 @@
+name: Docker Build and Push
+
+on:
+  push:
+    branches: [ "master" ]  # 主分支提交时触发
+    tags: [ "v*" ]        # 标签推送时触发（如 v1.0.0）
+  workflow_dispatch:      # 允许手动触发
+
+env:
+  REGISTRY_IMAGE: triment/oidc  # Docker Hub 镜像地址
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [linux/amd64]  # 支持多平台架构[1,5](@ref)
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Sanitize ref name
+        id: sanitize
+        run: |
+          # 替换非法字符
+          SANITIZED_REF_NAME=$(echo "${{ github.ref_name }}" | tr -cd '[:alnum:]._-' | sed 's/\//-/g')
+          echo "SANITIZED_REF_NAME=$SANITIZED_REF_NAME" >> $GITHUB_ENV
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3  # 初始化 buildx[1,5](@ref)
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}  # Docker Hub 用户名
+          password: ${{ secrets.DOCKERHUB_TOKEN }}     # Docker Hub 访问令牌[2,5](@ref)
+
+      - name: Build and Push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: ${{ matrix.platform }}
+          push: true
+          tags: |
+            ${{ env.REGISTRY_IMAGE }}:latest
+            ${{ env.REGISTRY_IMAGE }}:${{ github.sha }}
+            ${{ env.REGISTRY_IMAGE }}:${{ env.SANITIZED_REF_NAME }}
