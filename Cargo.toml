@@ -32,6 +32,8 @@ anyhow = { workspace = true }
 base64 = { workspace = true }
 tracing.workspace = true
 tracing-subscriber.workspace = true
+rust-embed = { workspace = true, features = ["debug-embed"] }
+mime_guess = { workspace = true }
 
 [workspace.dependencies]
 axum = "0.8.4"

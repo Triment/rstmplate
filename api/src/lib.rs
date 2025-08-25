@@ -13,7 +13,7 @@ async fn get_user(
     Ok(axum::Json(user))
 }
 
-pub fn create_router(_state: AppState) -> axum::Router<AppState> {
+pub fn create_router() -> axum::Router<AppState> {
     let router = axum::Router::new()
         .route("/v1/user", axum::routing::post(sign_in))
         .route("/v1/user", axum::routing::get(get_user));
@@ -37,7 +37,7 @@ mod tests {
             .await
             .unwrap();
         let app_state = AppState {db_pool:pool.clone() };
-        let router = create_router(app_state.clone()).with_state(app_state);
+        let router = create_router().with_state(app_state);
         // Here you would typically test the router's functionality
         // For example, you could use axum's test utilities to send requests
         // and assert the responses.
